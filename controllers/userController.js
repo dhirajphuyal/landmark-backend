@@ -7,14 +7,14 @@ exports.registerUser = async (req, res) => {
     try {
         const {
             username,
+            firstName,
+            lastName,
             email,
             password,
             role,
-            //profile
         } = req.body;
-
         // Check if user already exists
-        let user = await User.findOne({email});
+        let user = await User.findOne({username});
         if (user) {
             return res.status(400).json({message: 'User already exists'});
         }
@@ -25,6 +25,8 @@ exports.registerUser = async (req, res) => {
         // Create a new user
         user = new User({
             username,
+            firstName,
+            lastName,
             email,
             password: hashedPassword,
             role,
@@ -41,10 +43,10 @@ exports.registerUser = async (req, res) => {
 // Handle user login
 exports.loginUser = async (req, res) => {
     try {
-        const {email, password} = req.body;
+        const {username, password} = req.body;
 
         // Check if user exists
-        const user = await User.findOne({email});
+        const user = await User.findOne({username});
         if (! user) {
             return res.status(400).json({message: 'Invalid credentials'});
         }
@@ -58,19 +60,20 @@ exports.loginUser = async (req, res) => {
         // Create JWT payload
         const payload = {
             user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
                 id: user.id,
-                role: user.role
+                role: user.role,
             }
         };
 
         // Sign token
         jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '1h'
+            expiresIn: '5h'
         }, (error, token) => {
             if (error) 
                 throw error;
-            
-            res.json({token});
+            res.send(token);
         });
     } catch (error) {
         res.status(500).json({message: 'Error logging in user', error: error.message});

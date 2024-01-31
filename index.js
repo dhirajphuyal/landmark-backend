@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const {createDecoration, getAllDecorations, getDecorationById, updateDecoration, deleteDecoration} = require("./controllers/decorationController");
 const {createBooking, getBookingsByCustomer, updateBookingStatus, cancelBooking} = require("./controllers/bookingController");
-const {registerUser} = require("./controllers/userController");
+const {registerUser, loginUser} = require("./controllers/userController");
 require('dotenv').config();
 
 const app = express();
@@ -34,6 +34,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to LandmarkDecor API!');
 });
 app.post('/register', registerUser);
+app.post('/login', loginUser);
 app.post('/decorations', createDecoration);
 app.get('/decorations', getAllDecorations);
 app.get('/decorations/:id', getDecorationById);
